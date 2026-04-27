@@ -1,0 +1,93 @@
+{
+  "name": "app-display",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "app-display/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/app-display",
+        "browser": "app-display/src/main.ts",
+        "tsConfig": "app-display/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "app-display/public"
+          }
+        ],
+        "styles": ["app-display/src/styles.scss"],
+        "server": "app-display/src/main.server.ts",
+        "ssr": {
+          "entry": "app-display/src/server.ts"
+        },
+        "outputMode": "server"
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "app-display:build:production"
+        },
+        "development": {
+          "buildTarget": "app-display:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "dependsOn": ["app-server:serve"],
+      "options": {
+        "proxyConfig": "app-display/proxy.conf.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "app-display/jest.config.cts",
+        "tsConfig": "app-display/tsconfig.spec.json"
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "app-display:build",
+        "port": 4300,
+        "staticFilePath": "dist/app-display/browser",
+        "spa": true
+      }
+    }
+  }
+}
