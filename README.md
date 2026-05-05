@@ -1,96 +1,161 @@
-# NxTodoList
+# Nx Todo List - Team Management & Collaboration
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A powerful, full-stack Todo List application designed for team collaboration. Built with a modern monorepo architecture using **Nx**, **Angular**, and **NestJS**.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+---
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## 🚀 Technology Stack
 
-## Run tasks
+- **Monorepo Management**: [Nx](https://nx.dev)
+- **Frontend**: [Angular](https://angular.io) (Standalone Components)
+- **Backend**: [NestJS](https://nestjs.com)
+- **Database**: [MySQL](https://www.mysql.com)
+- **ORM**: [TypeORM](https://typeorm.io)
+- **Authentication**: JWT (JSON Web Token) & Passport
+- **Security**: Bcrypt for password hashing
 
-To run tasks with Nx use:
+---
 
-```sh
-npx nx <target> <project-name>
+## 🏗️ Architecture
+
+Proyek ini menggunakan arsitektur **Monorepo** yang memungkinkan berbagi kode (shared code) antara frontend dan backend melalui **Shared Libraries**.
+
+- **app-display**: Aplikasi frontend Angular.
+- **app-server**: Aplikasi backend NestJS.
+- **shared**: Library berisi interface, DTO, dan utilitas yang digunakan bersama.
+
+---
+
+## 📁 Struktur Proyek & Penamaan File
+
+### Penamaan File (Naming Convention)
+Format: `[nama-file].[fungsi].ts`
+- **FE**: `login.page.ts`, `auth.service.ts`, `todo.component.ts`
+- **BE**: `auth.controller.ts`, `user.service.ts`, `team.model.ts`
+
+### Struktur Folder Utama
+```text
+nx-todo-list/
+├── app-display/              # Frontend (Angular)
+│   └── src/app/
+│       ├── auth/             # Login, Register
+│       ├── pages/            # Main Todo pages
+│       ├── profile/          # User profile
+│       └── teams/            # Team management
+├── app-server/               # Backend (NestJS)
+│   └── src/app/
+│       ├── controller/       # HTTP Handlers
+│       ├── services/         # Business Logic
+│       ├── model/            # Database Entities
+│       ├── guards/           # Auth Guards & Strategies
+│       └── middleware/       # Pre-request processing
+└── shared/                   # Shared Library (DTOs & Interfaces)
 ```
 
-For example:
+---
 
-```sh
-npx nx build myproject
+## 💾 Database Schema
+
+### Table: `user`
+- `id`: PK, Autoincrement
+- `user_code`: Unique code for invitations
+- `email`: Unique email
+- `password`: Hashed using Bcrypt
+- `fullName`: User's full name
+- `id_team`: FK to Team table
+- `is_verified`: Email verification status
+
+### Table: `team`
+- `id`: PK, Autoincrement
+- `name`: Team name
+
+### Table: `todo`
+- `id`: PK, Autoincrement
+- `title`, `description`
+- `status`: enum('open', 'pending', 'in-progress', 'done')
+- `priority`: enum('low', 'medium', 'high')
+- `dueDate`, `reminderTime`
+- `userId`: FK to User table
+
+---
+
+## 📡 API Endpoints (Backend)
+
+### Authentication
+- `POST /auth/register`: Daftar akun baru
+- `POST /auth/login`: Masuk dan dapatkan session token
+- `POST /auth/logout`: Keluar dari sesi
+- `GET /auth/verify-email`: Verifikasi akun via email
+
+### User & Profile
+- `GET /user/profile`: Ambil data profil
+- `PUT /user/profile`: Update data profil
+- `PUT /user/change-password`: Ganti password user
+
+### Team Management
+- `POST /team`: Buat tim baru
+- `GET /team/:id`: Lihat detail tim
+- `POST /team/invite`: Undang member via `user_code`
+- `DELETE /team/:id/leave`: Keluar dari tim
+
+---
+
+## 🛠️ Setup & Installation
+
+### 1. Prasyarat
+- Node.js (v18+)
+- MySQL Server
+- NPM
+
+### 2. Install Dependencies
+```bash
+npm install
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
+### 3. Konfigurasi Environment
+Salin file `.env` di root atau `app-server/` dan sesuaikan kredensial database Anda:
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=yourpassword
+DB_DATABASE=nx_todo_list
+JWT_SECRET=your_secret_key
+JWT_EXPIRES_IN=1h
 ```
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+---
 
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
+## 🏃‍♂️ Running the Application
 
-# Generate a library
-npx nx g @nx/react:lib some-lib
+Jalankan backend dan frontend secara bersamaan atau terpisah:
+
+### Run Backend
+```bash
+npx nx serve app-server
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
+### Run Frontend
+```bash
+npx nx serve app-display
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+---
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 🧪 Testing
 
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+### Test All
+```bash
+npx nx run-many -t test
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Test Specific Project
+```bash
+npx nx test app-server
+npx nx test app-display
+```
 
-## Install Nx Console
+---
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 🔄 User Flow
+`Sign Up` ➡️ `Email Verification` ➡️ `Login` ➡️ `Update Profile` ➡️ `Create/Join Team` ➡️ `Manage Todos`
