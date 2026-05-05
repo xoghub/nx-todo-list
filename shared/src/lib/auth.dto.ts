@@ -1,15 +1,15 @@
-export class LoginDto {
+export interface LoginDto {
   email: string;
   password: string;
 }
 
-export class RegisterDto {
+export interface RegisterDto {
   email: string;
   password: string;
   fullName: string;
 }
 
-export class AuthResponseDto {
+export interface AuthResponseDto {
   accessToken: string;
   refreshToken: string;
   user: {
